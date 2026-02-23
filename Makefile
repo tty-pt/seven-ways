@@ -22,6 +22,9 @@ map := ${map:%=map/%.png} map/info.txt
 share := map.txt ${resources} ${map}
 share-dirs := resources map
 
-CFLAGS := -g
+CFLAGS := -g -I../qmap/include -I../geo/include -I../qgl/include
+
+# Ensure the linker searches the updated local libraries first
+LDFLAGS := -L../qgl -L../qmap -L../geo
 
 -include ../mk/include.mk
