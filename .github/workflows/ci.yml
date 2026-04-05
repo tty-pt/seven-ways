@@ -13,6 +13,8 @@ jobs:
       deps: "libgeo,libqgl"
       deps_openbsd: "libqsys,libgeo,libqgl"
       deps_pacman_mingw: "mingw-w64-libgeo,mingw-w64-libqgl"
+      deps_winget: "mingw-w64-x86_64-glfw,mingw-w64-x86_64-libpng,mingw-w64-x86_64-glew,mingw-w64-x86_64-xxhash"
+      deps_winget_tty: "libqsys,libqmap,libgeo,libqgl"
     secrets:
       HOST: ${{ secrets.OPENBSD_HOST }}
       USER: ${{ secrets.OPENBSD_USER }}
