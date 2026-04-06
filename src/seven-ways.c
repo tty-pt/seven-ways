@@ -149,6 +149,7 @@ int qgl_key(unsigned short code,
 int main(void) {
 	uint32_t w, h;
 
+	qgl_init();
 	qgl_size(&w, &h);
 	qui_init(w, h);
 
