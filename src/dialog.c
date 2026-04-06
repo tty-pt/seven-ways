@@ -431,6 +431,8 @@ int dialog_action(void)
 
 	if (cdialog.next || !cdialog.option_n) {
 		cdialog.text = cdialog.next;
+		if (!cdialog.text && cdialog.then)
+			cdialog.then();
 		qui_text(txt, cdialog.text);
 		qui_rebuild();
 		return 1;
