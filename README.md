@@ -9,6 +9,6 @@ The characters are animals, though :)
 
 ## Installation
 Check out [these instructions](https://github.com/tty-pt/ci/blob/main/docs/install.md#install-ttypt-packages).
-And use "7ways" as the package name.
+And use "seven-ways" as the package name.
 
 You can also go to the release page and download **setup.exe** if you are on Windows.

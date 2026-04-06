@@ -1,9 +1,1 @@
-CFLAGS-7ways-o :=
-CFLAGS-game-o :=
-CFLAGS-time-o :=
-CFLAGS-tile-o :=
-CFLAGS-char-o :=
-CFLAGS-view-o :=
-CFLAGS-map-o :=
-CFLAGS-font-o :=
-CFLAGS-dialog-o :=
+CFLAGS-seven-ways-o :=

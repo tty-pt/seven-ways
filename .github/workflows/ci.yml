@@ -9,7 +9,7 @@ jobs:
   build:
     uses: tty-pt/ci/.github/workflows/all-in-one.yml@main
     with:
-      name: 7ways
+      name: seven-ways
       publish_to: "deb,apk,rpm,brew,openbsd,winget"
       deps: "libgeo,libqgl"
       deps_openbsd: "libqsys,libgeo,libqgl"

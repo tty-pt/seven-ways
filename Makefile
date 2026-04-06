@@ -9,7 +9,7 @@ obj-y := game time
 obj-y += tile char
 obj-y += view map
 obj-y += dialog
-7ways-obj-y := ${obj-y:%=src/%.o}
+seven-ways-obj-y := ${obj-y:%=src/%.o}
 
 tmxc-obj-y := map img png
 tmxc-obj-y := ${tmxc-obj-y:%=src/%.o}
