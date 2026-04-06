@@ -138,10 +138,10 @@ my_update(void) {
 }
 
 int qgl_key(unsigned short code,
-		unsigned short value,
-		int type UNUSED)
+		unsigned short type,
+		int value UNUSED)
 {
-	if (value)
+	if (type)
 		return 0;
 	else
 		return input_press(code);

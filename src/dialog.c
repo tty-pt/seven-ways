@@ -58,15 +58,21 @@ static char *dialog_snprintf(char *fmt)
 	char *s, *r, *e;
 	unsigned n;
 
-	for (s = fmt, r = res; *s; r++, s++) {
+	for (s = fmt, r = res; *s && r < res + BUFSIZ * 2 - 1; r++, s++) {
 		if (*s == '%' && isdigit((uint8_t)*(s + 1))) {
 			n = (unsigned)strtoull(s + 1, &e, 10);
 			if (n == 0) {
 				*r = *s;
 				continue;
 			}
+			if (n > 8 || !dialog_arg[n - 1]) {
+				*r = *s;
+				continue;
+			}
 			const char *ins = dialog_arg[n - 1];
 			size_t len = strlen(ins);
+			if (r + len >= res + BUFSIZ * 2 - 1)
+				break;
 			memcpy(r, ins, len);
 			r += len - 1;
 			s = e - 1;
@@ -481,8 +487,8 @@ int input_press(unsigned short code)
 		qmap_get(input_hd, &cdialog.input);
 
 	if (code == QGL_KEY_ENTER && !(in->flags & QGL_INPUT_MULTILINE)) {
-		dialog_start(in->next);
-		return 0;
+		cdialog.input = QM_MISS;
+		return 1;
 	}
 
 	in->len += qgl_key_parse(in->text, in->len, code, in->flags);

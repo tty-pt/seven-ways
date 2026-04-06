@@ -155,7 +155,7 @@ char_update(unsigned ref, double dt)
 
 unsigned
 char_load(unsigned tm_ref, double x, double y) {
-	char_t ch;
+	char_t ch = {0};
 	unsigned ret;
 
 	ch.tm_ref = tm_ref;
