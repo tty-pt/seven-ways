@@ -119,7 +119,7 @@ vchar_put(unsigned ref, int16_t x, int16_t y)
 void
 view_load(char *filename) {
 	char line[BUFSIZ];
-	FILE *fp = fopen("./map.txt", "r");
+	FILE *fp = fopen(filename, "r");
 	char *space, *word, *ret;
 
 	CBUG(!fp, "couldn't open %s\n", filename);

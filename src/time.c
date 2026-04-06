@@ -5,7 +5,7 @@
 
 double time_tick;
 
-long long start_t;
+static long long start_t;
 static long long
 timestamp(void)
 {

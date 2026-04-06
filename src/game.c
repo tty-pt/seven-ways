@@ -23,7 +23,7 @@ game_update(void) {
 	dt = dt_get();
 	view_update(dt);
 	qgl_poll();
-	return dt_get();
+	return dt;
 }
 
 void

@@ -9,13 +9,14 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include <ttypt/qsys.h>
 
 unsigned start_cont = 1, cont = 1;
 unsigned lamb;
 unsigned tile, layer = 0;
-unsigned dlg_edit, dlg_quit, dlg_save;
+unsigned dlg_edit, dlg_quit;
 unsigned font_ref;
 
 extern double hw, hh;
@@ -235,7 +236,7 @@ int main(void) {
 				be_height);
 
 
-		uint8_t alpha = (time_tick * 200.0);
+		uint8_t alpha = (uint8_t) ((fmod(time_tick, 1.3) / 1.3) * 255);
 
 		qgl_tint(0x00FFFFFF
 				| (((uint64_t) alpha) << 24));
