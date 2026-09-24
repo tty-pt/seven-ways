@@ -1,12 +1,12 @@
 #include <ttypt/qgl.h>
 #include "../include/view.h"
-#include "../include/time.h"
+#include "../include/gtime.h"
 #include "../include/tile.h"
 #include "../include/char.h"
 #include "../include/font.h"
 
 void png_init(void);
-const uint8_t dim = 3;
+uint8_t dim = 3;
 
 void
 game_init(void)

@@ -1,14 +1,14 @@
 #include <ttypt/qgl-tm.h>
 #include "../include/char.h"
 #include "../include/tile.h"
-#include "../include/time.h"
+#include "../include/gtime.h"
 #include "../include/cam.h"
 #include "../include/view.h"
 #include "../include/dialog.h"
 
 #include <math.h>
 
-#include <ttypt/qmap.h>
+#include <ttypt/corm.h>
 
 typedef struct {
 	unsigned tm_ref;
@@ -30,7 +30,7 @@ static uint8_t anim_frames[] = {
 
 void char_render(unsigned ref)
 {
-	const char_t *ch = qmap_get(char_hd, &ref);
+	const char_t *ch = corm_get(char_hd, &ref);
 	const qgl_tm_t *tm = qgl_tm_get(ch->tm_ref);
 
 	/* nº de frames na linha (como antes) */
@@ -58,7 +58,7 @@ void
 char_face(unsigned ref, enum dir dir)
 {
 	char_t *ch = (char_t *)
-		qmap_get(char_hd, &ref);
+		corm_get(char_hd, &ref);
 
 	ch->dir = dir;
 }
@@ -67,7 +67,7 @@ void
 char_animate(unsigned ref, enum anim anim)
 {
 	char_t *ch = (char_t *)
-		qmap_get(char_hd, &ref);
+		corm_get(char_hd, &ref);
 
 	ch->anim = anim;
 }
@@ -75,21 +75,21 @@ char_animate(unsigned ref, enum anim anim)
 enum dir
 char_dir(unsigned ref)
 {
-	const char_t *ch = qmap_get(char_hd, &ref);
+	const char_t *ch = corm_get(char_hd, &ref);
 	return ch->dir;
 }
 
 enum anim
 char_animation(unsigned ref)
 {
-	const char_t *ch = qmap_get(char_hd, &ref);
+	const char_t *ch = corm_get(char_hd, &ref);
 	return ch->anim;
 }
 
 void
 char_ipos(int16_t *p, unsigned ref)
 {
-	const char_t *ch = qmap_get(char_hd, &ref);
+	const char_t *ch = corm_get(char_hd, &ref);
 
 	p[0] = ch->x;
 	p[1] = ch->y;
@@ -99,7 +99,7 @@ char_ipos(int16_t *p, unsigned ref)
 void
 char_pos(double *x, double *y, unsigned ref)
 {
-	const char_t *ch = qmap_get(char_hd, &ref);
+	const char_t *ch = corm_get(char_hd, &ref);
 
 	*x = ch->x + ch->nx;
 	*y = ch->y + ch->ny;
@@ -108,7 +108,7 @@ char_pos(double *x, double *y, unsigned ref)
 int
 char_update(unsigned ref, double dt)
 {
-	char_t *ch = (char_t *) qmap_get(char_hd, &ref);
+	char_t *ch = (char_t *) corm_get(char_hd, &ref);
 	char_t cho;
 	double char_speed = 4.0, tr;
 
@@ -117,7 +117,7 @@ char_update(unsigned ref, double dt)
 
 	tr = dt * char_speed;
 
-	if (view_collides(ch->x, ch->y, ch->dir) != QM_MISS)
+	if (view_collides(ch->x, ch->y, ch->dir) != CM_MISS)
 	{
 		ch->anim = AN_IDLE;
 		return 0;
@@ -147,8 +147,8 @@ char_update(unsigned ref, double dt)
 	ch->anim = AN_IDLE;
 	cho = *ch;
 
-	qmap_del(char_hd, &ref);
-	qmap_put(char_hd, &ref, &cho);
+	corm_del(char_hd, &ref);
+	corm_put(char_hd, &ref, &cho);
 
 	return 0;
 }
@@ -163,9 +163,9 @@ char_load(unsigned tm_ref, double x, double y) {
 	ch.y = y;
 	ch.anim = AN_IDLE;
 	ch.dir = DIR_DOWN;
-	ch.dialog = QM_MISS;
+	ch.dialog = CM_MISS;
 
-	ret = qmap_put(char_hd, NULL, &ch);
+	ret = corm_put(char_hd, NULL, &ch);
 	vchar_put(ret, x, y);
 	return ret;
 }
@@ -174,7 +174,7 @@ unsigned
 char_dialog(unsigned ref, char *text)
 {
 	char_t *ch = (char_t *)
-		qmap_get(char_hd, &ref);
+		corm_get(char_hd, &ref);
 
 	unsigned dialog = dialog_add(text);
 	ch->dialog = dialog;
@@ -182,7 +182,7 @@ char_dialog(unsigned ref, char *text)
 }
 
 void char_talk(unsigned ref, enum dir dir) {
-	const char_t *ch = qmap_get(char_hd, &ref);
+	const char_t *ch = corm_get(char_hd, &ref);
 	static enum dir reverse_dir[] = {
 		DIR_UP,
 		DIR_DOWN,
@@ -202,7 +202,7 @@ char_sync(void)
 void
 char_init(void)
 {
-	unsigned qm_char = qmap_reg(sizeof(char_t));
+	unsigned qm_char = corm_reg(sizeof(char_t));
 
-	char_hd = qmap_open(NULL, NULL, QM_HNDL, qm_char, 0xFF, QM_AINDEX);
+	char_hd = corm_open(NULL, NULL, CM_HNDL, qm_char, 0xFF, CM_AINDEX);
 }

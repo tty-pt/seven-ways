@@ -4,7 +4,6 @@
 #include "../include/cam.h"
 #include "../include/view.h"
 
-#include <ttypt/qmap.h>
 #include <ttypt/qsys.h>
 
 extern cam_t cam;

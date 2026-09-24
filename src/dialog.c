@@ -2,14 +2,14 @@
 #include <ttypt/qgl-font.h>
 #include <ttypt/qgl-ui.h>
 #include "../include/dialog.h"
-#include "../include/time.h"
+#include "../include/gtime.h"
 
 #include <ctype.h>
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
 
-#include <ttypt/qmap.h>
+#include <ttypt/corm.h>
 #include <ttypt/idm.h>
 #include <ttypt/qsys.h>
 
@@ -141,7 +141,7 @@ static void update_options(void) {
 	unsigned ref, idx = 0;
 
 	for (; ids_next(&ref, &it); idx++) {
-		const struct option *opt = qmap_get(option_hd, &ref);
+		const struct option *opt = corm_get(option_hd, &ref);
 		qui_div_t *row = qui_new(options, NULL);
 
 		qui_class(row, (idx == cdialog.option) ?
@@ -175,13 +175,13 @@ void qui_rebuild(void) {
 	if (cdialog.option_n)
 		QUI_STYLE(options, display, QUI_DISPLAY_BLOCK);
 
-	if (cdialog.input != QM_MISS)
+	if (cdialog.input != CM_MISS)
 		QUI_STYLE(input, display, QUI_DISPLAY_BLOCK);
 }
 
 static void dialog_begin(unsigned ref)
 {
-	const struct dialog *dlg = qmap_get(dialog_hd, &ref);
+	const struct dialog *dlg = corm_get(dialog_hd, &ref);
 
 	if (cdialog.text && cdialog.then)
 		cdialog.then();
@@ -308,13 +308,13 @@ static void dialog_build_styles(void)
 
 void dialog_init(void)
 {
-	unsigned qm_dialog = qmap_reg(sizeof(struct dialog));
-	unsigned qm_opt = qmap_reg(sizeof(struct option));
-	unsigned qm_input = qmap_reg(sizeof(struct input));
+	unsigned qm_dialog = corm_reg(sizeof(struct dialog));
+	unsigned qm_opt = corm_reg(sizeof(struct option));
+	unsigned qm_input = corm_reg(sizeof(struct input));
 
-	dialog_hd = qmap_open(NULL, NULL, QM_HNDL, qm_dialog, 0xFF, QM_AINDEX);
-	option_hd = qmap_open(NULL, NULL, QM_HNDL, qm_opt, 0xFF, QM_AINDEX);
-	input_hd = qmap_open(NULL, NULL, QM_HNDL, qm_input, 0xFF, QM_AINDEX);
+	dialog_hd = corm_open(NULL, NULL, CM_HNDL, qm_dialog, 0xFF, CM_AINDEX);
+	option_hd = corm_open(NULL, NULL, CM_HNDL, qm_opt, 0xFF, CM_AINDEX);
+	input_hd = corm_open(NULL, NULL, CM_HNDL, qm_input, 0xFF, CM_AINDEX);
 
 	dialog_seq = ids_init();
 	qgl_size(&be_width, &be_height);
@@ -331,8 +331,8 @@ unsigned dialog_add(char *text)
 	memset(&d, 0, sizeof(d));
 	d.text = text;
 	d.options = ids_init();
-	d.input = QM_MISS;
-	return qmap_put(dialog_hd, NULL, &d);
+	d.input = CM_MISS;
+	return corm_put(dialog_hd, NULL, &d);
 }
 
 static inline unsigned input_add(uint32_t cw, uint32_t ch, unsigned next, unsigned flags)
@@ -344,14 +344,14 @@ static inline unsigned input_add(uint32_t cw, uint32_t ch, unsigned next, unsign
 	d.ch = ch;
 	d.next = next;
 	d.flags = flags;
-	return qmap_put(input_hd, NULL, &d);
+	return corm_put(input_hd, NULL, &d);
 }
 
 unsigned dialog_input(unsigned d_ref, uint32_t cw, uint32_t ch,
 		      unsigned flags, char *next)
 {
 	struct dialog *d = (struct dialog *)
-		qmap_get(dialog_hd, &d_ref);
+		corm_get(dialog_hd, &d_ref);
 
 	unsigned next_ref = dialog_add(next);
 	unsigned input_ref = input_add(cw, ch, next_ref, flags);
@@ -363,7 +363,7 @@ unsigned dialog_input(unsigned d_ref, uint32_t cw, uint32_t ch,
 void dialog_then(unsigned ref, dialog_cb_t *cb)
 {
 	struct dialog *d = (struct dialog *)
-		qmap_get(dialog_hd, &ref);
+		corm_get(dialog_hd, &ref);
 
 	d->then = cb;
 }
@@ -372,15 +372,15 @@ static unsigned option_add(char *text, unsigned ref)
 {
 	struct option d = { .text = text, .ref = ref };
 
-	return qmap_put(option_hd, NULL, &d);
+	return corm_put(option_hd, NULL, &d);
 }
 
 unsigned dialog_option(unsigned ref, char *op_text, char *text)
 {
 	struct dialog *d = (struct dialog *)
-		qmap_get(dialog_hd, &ref);
+		corm_get(dialog_hd, &ref);
 
-	unsigned new_ref = text ? dialog_add(text) : QM_MISS;
+	unsigned new_ref = text ? dialog_add(text) : CM_MISS;
 	unsigned new_o_ref = option_add(op_text, new_ref);
 
 	ids_push(&d->options, new_o_ref);
@@ -423,12 +423,12 @@ int dialog_action(void)
 	if (!cdialog.text)
 		return 0;
 
-	if (cdialog.input != QM_MISS) {
+	if (cdialog.input != CM_MISS) {
 		struct input *in = (struct input *)
-			qmap_get(input_hd, &cdialog.input);
+			corm_get(input_hd, &cdialog.input);
 
 		dialog_arg[dialog_arg_n++] = in->text;
-		if (in->next != QM_MISS) {
+		if (in->next != CM_MISS) {
 			QUI_STYLE(input, display, QUI_DISPLAY_NONE);
 			dialog_begin(in->next);
 			return 1;
@@ -448,7 +448,7 @@ int dialog_action(void)
 	unsigned ref;
 	for (uint8_t i = 0; ids_next(&ref, &it) && i != cdialog.option; i++)
 		;
-	const struct option *opt = qmap_get(option_hd, &ref);
+	const struct option *opt = corm_get(option_hd, &ref);
 
 	cdialog.text = NULL;
 	dialog_begin(opt->ref);
@@ -480,14 +480,14 @@ int dialog_select(int down)
 
 int input_press(unsigned short code)
 {
-	if (!cdialog.text || cdialog.input == QM_MISS)
+	if (!cdialog.text || cdialog.input == CM_MISS)
 		return 0;
 
 	struct input *in = (struct input *)
-		qmap_get(input_hd, &cdialog.input);
+		corm_get(input_hd, &cdialog.input);
 
 	if (code == QGL_KEY_ENTER && !(in->flags & QGL_INPUT_MULTILINE)) {
-		cdialog.input = QM_MISS;
+		cdialog.input = CM_MISS;
 		return 1;
 	}
 

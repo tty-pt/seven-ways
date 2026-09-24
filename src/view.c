@@ -10,8 +10,8 @@
 #include <stdio.h>
 
 #include <ttypt/qsys.h>
-#include <ttypt/qmap.h>
-#include <ttypt/geo.h>
+#include <ttypt/corm.h>
+#include <ttypt/islet.h>
 #include <ttypt/point.h>
 
 typedef struct {
@@ -102,8 +102,8 @@ view_render(void) {
 
 	view_render_bm(tl, bmtl, l, 0, layer_n, 0);
 
-	cur = geo_iter(smap_hd, tl, l, dim);
-	while (geo_next(p, &ref, cur))
+	cur = islet_ops[dim].iter(smap_hd, tl, l);
+	while (islet_next(p, &ref, cur))
 		char_render(ref);
 
 	view_render_bm(tl, bmtl, l, 0, above_n, layer_n);
@@ -113,7 +113,7 @@ void
 vchar_put(unsigned ref, int16_t x, int16_t y)
 {
 	int16_t s[] = { x, y, 0, 0 };
-	geo_put(smap_hd, s, ref, dim);
+	islet_ops[dim].put(smap_hd, s, ref);
 }
 
 void
@@ -214,7 +214,7 @@ void
 view_init(void)
 {
 	uint32_t be_width, be_height;
-	geo_init();
+	islet_init();
 
 	qgl_size(&be_width, &be_height);
 
@@ -227,8 +227,8 @@ view_init(void)
 	view_w = be_width / view_mul;
 	view_h = be_height / view_mul;
 
-	smap_hd = geo_open(NULL, NULL, 0xFFFFF);
-	qmap_drop(smap_hd);
+	smap_hd = islet_open(NULL, NULL, 0xFFFFF);
+	corm_drop(smap_hd);
 }
 
 static inline void
@@ -241,9 +241,9 @@ vchar_update(unsigned ref, double dt)
 	if (char_update(ref, dt))
 		return;
 
-	geo_del(smap_hd, p, dim);
+	islet_ops[dim].del(smap_hd, p);
 	char_ipos(p, ref);
-	geo_put(smap_hd, p, ref, dim);
+	islet_ops[dim].put(smap_hd, p, ref);
 }
 
 void
@@ -276,9 +276,9 @@ view_collides(double x, double y, enum dir dir)
 	}
 
 	int16_t p[] = { x, y, 0, 0 };
-	unsigned ret = geo_get(smap_hd, p, dim);
+	unsigned ret = islet_ops[dim].get(smap_hd, p);
 	
-	if (ret != QM_MISS)
+	if (ret != ISLET_MISS)
 		return ret;
 
 	uint32_t mx = x - view_min[0], my = y - view_min[1];
@@ -286,16 +286,16 @@ view_collides(double x, double y, enum dir dir)
 	if (view_flags[my * map_width + mx] & 0x1)
 		return 0;
 
-	return QM_MISS;
+	return ISLET_MISS;
 }
 
 void
 view_update(double dt)
 {
-	unsigned cur = qmap_iter(smap_hd, NULL, 0);
+	unsigned cur = corm_iter(smap_hd, NULL, 0);
 	const void *key, *value;
 
-	while (qmap_next(&key, &value, cur))
+	while (corm_next(&key, &value, cur))
 		vchar_update(* (unsigned *) value, dt);
 }
 
@@ -331,7 +331,7 @@ vdialog_action(void)
 	char_pos(&x, &y, me);
 	npc = view_collides(x, y, dir);
 
-	if (npc == QM_MISS || npc == 0)
+	if (npc == ISLET_MISS || npc == 0)
 		return 0;
 
 	char_talk(npc, dir);

@@ -11,10 +11,10 @@ jobs:
     with:
       name: seven-ways
       publish_to: "deb,apk,rpm,brew,openbsd,winget"
-      deps: "libgeo,libqgl"
-      deps_openbsd: "libqsys,libgeo,libqgl"
+      deps: "libislet,libqgl"
+      deps_openbsd: "libqsys,libislet,libqgl"
       deps_winget: "mingw-w64-x86_64-glfw,mingw-w64-x86_64-libpng,mingw-w64-x86_64-glew,mingw-w64-x86_64-xxhash"
-      deps_winget_tty: "libqsys,libqmap,libgeo,libqgl"
+      deps_winget_tty: "libqsys,libcorm,libislet,libqgl"
     secrets:
       HOST: ${{ secrets.OPENBSD_HOST }}
       USER: ${{ secrets.OPENBSD_USER }}

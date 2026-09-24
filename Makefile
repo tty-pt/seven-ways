@@ -1,6 +1,6 @@
 BE := glfw
 
-LDLIBS := -lm -lgeo -lxxhash -lqmap -lqsys -lqgl
+LDLIBS := -lm -lislet -lxxhash -lcorm -lqsys -lqgl
 LDLIBS += ${LDLIBS-${BE}}
 
 LDLIBS-Linux += -lEGL
@@ -22,9 +22,6 @@ map := ${map:%=map/%.png} map/info.txt
 share := map.txt ${resources} ${map}
 share-dirs := resources map
 
-CFLAGS := -g -I../qmap/include -I../geo/include -I../qgl/include
-
-# Ensure the linker searches the updated local libraries first
-LDFLAGS := -L../qgl -L../qmap -L../geo
+CFLAGS := -g
 
 -include ../mk/include.mk

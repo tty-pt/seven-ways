@@ -5,7 +5,7 @@
 
 #include "../include/game.h"
 #include "../include/dialog.h"
-#include "../include/time.h"
+#include "../include/gtime.h"
 
 #include <stdio.h>
 #include <stdlib.h>
