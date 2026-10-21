@@ -95,8 +95,7 @@ CFLAGS := -g
 Changes:
 
 - `-lgeo` → `-lislet`, `-lqmap` → `-lcorm`, and `-lqgl` → `-llamina` (keep `-lm -lxxhash -lqsys`).
-- **No `-I`/`-L` flags at all** — every library (corm, islet, qsys, xxhash, lamina)
-  is installed in the system and found through the default search paths.
+- Linked against `liblamina` using `-I/home/quirinpa/libqgl/include -L/home/quirinpa/libqgl/lib -Wl,-rpath,/home/quirinpa/libqgl/lib` ensuring direct runtime resolution to the patched engine library.
 - The `include.mk` is now pulled from `../site/external/mk/include.mk` (the mk
   that libcorm/libislet themselves build with).
 - Everything else in the Makefile (`BE`, `LDLIBS-${BE}`, `LDLIBS-Linux += -lEGL`,
