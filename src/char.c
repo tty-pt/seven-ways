@@ -1,4 +1,4 @@
-#include <ttypt/qgl-tm.h>
+#include <ttypt/lam-tm.h>
 #include "../include/char.h"
 #include "../include/tile.h"
 #include "../include/gtime.h"
@@ -31,7 +31,7 @@ static uint8_t anim_frames[] = {
 void char_render(unsigned ref)
 {
 	const char_t *ch = corm_get(char_hd, &ref);
-	const qgl_tm_t *tm = qgl_tm_get(ch->tm_ref);
+	const lam_tm_t *tm = lam_tm_get(ch->tm_ref);
 
 	/* nº de frames na linha (como antes) */
 	uint8_t anim_n = anim_frames[AN_IDLE] ? anim_frames[AN_IDLE] : tm->nx;
@@ -47,7 +47,7 @@ void char_render(unsigned ref)
 	int32_t scr_y = (int32_t)(view_hh + (ch->y + ch->ny - offs - cam.y) * view_mul);
 
 	/* ordem correta: (ref, idx, x, y, w, h, rx, ry) */
-	qgl_tile_draw(ch->tm_ref, idx,
+	lam_tile_draw(ch->tm_ref, idx,
 	              scr_x, scr_y,
 	              (uint32_t)(cam.zoom * tm->w),
 	              (uint32_t)(cam.zoom * tm->h),

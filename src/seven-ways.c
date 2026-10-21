@@ -1,7 +1,7 @@
-#include <ttypt/qgl.h>
-#include <ttypt/qgl-tm.h>
-#include <ttypt/qgl-ui.h>
-#include <ttypt/qgl-font.h>
+#include <ttypt/lam.h>
+#include <ttypt/lam-tm.h>
+#include <ttypt/lam-ui.h>
+#include <ttypt/lam-font.h>
 
 #include "../include/game.h"
 #include "../include/dialog.h"
@@ -127,17 +127,17 @@ void ensure_move(enum dir dir) {
 
 void
 my_update(void) {
-	if (qgl_key_val(QGL_KEY_J) || qgl_key_val(QGL_KEY_DOWN))
+	if (lam_key_val(LAM_KEY_J) || lam_key_val(LAM_KEY_DOWN))
 		ensure_move(DIR_DOWN);
-	if (qgl_key_val(QGL_KEY_K) || qgl_key_val(QGL_KEY_UP))
+	if (lam_key_val(LAM_KEY_K) || lam_key_val(LAM_KEY_UP))
 		ensure_move(DIR_UP);
-	if (qgl_key_val(QGL_KEY_H) || qgl_key_val(QGL_KEY_LEFT))
+	if (lam_key_val(LAM_KEY_H) || lam_key_val(LAM_KEY_LEFT))
 		ensure_move(DIR_LEFT);
-	if (qgl_key_val(QGL_KEY_L) || qgl_key_val(QGL_KEY_RIGHT))
+	if (lam_key_val(LAM_KEY_L) || lam_key_val(LAM_KEY_RIGHT))
 		ensure_move(DIR_RIGHT);
 }
 
-int qgl_key(unsigned short code,
+int lam_key(unsigned short code,
 		unsigned short type,
 		int value UNUSED)
 {
@@ -150,32 +150,32 @@ int qgl_key(unsigned short code,
 int main(void) {
 	uint32_t w, h;
 
-	qgl_init();
-	qgl_size(&w, &h);
-	qui_init(w, h);
+	lam_init();
+	lam_size(&w, &h);
+	lam_ui_init(w, h);
 
 	game_init();
 
-	qgl_key_reg(QGL_KEY_ENTER, key_cont);
-	qgl_key_reg(QGL_KEY_SPACE, key_cont);
-	qgl_key_reg(QGL_KEY_TAB, key_cont);
+	lam_key_reg(LAM_KEY_ENTER, key_cont);
+	lam_key_reg(LAM_KEY_SPACE, key_cont);
+	lam_key_reg(LAM_KEY_TAB, key_cont);
 
-	qgl_key_reg(QGL_KEY_Q, key_quit);
+	lam_key_reg(LAM_KEY_Q, key_quit);
 
-	qgl_key_reg(QGL_KEY_J, key_down);
-	qgl_key_reg(QGL_KEY_DOWN, key_down);
-	qgl_key_reg(QGL_KEY_K, key_up);
-	qgl_key_reg(QGL_KEY_UP, key_up);
+	lam_key_reg(LAM_KEY_J, key_down);
+	lam_key_reg(LAM_KEY_DOWN, key_down);
+	lam_key_reg(LAM_KEY_K, key_up);
+	lam_key_reg(LAM_KEY_UP, key_up);
 
-	qgl_key_reg(QGL_KEY_E, key_edit);
+	lam_key_reg(LAM_KEY_E, key_edit);
 
-	qgl_key_default_reg(qgl_key);
+	lam_key_default_reg(lam_key);
 
 	view_load("./map.txt");
 
-	unsigned entry_ref = qgl_tex_load("./resources/seven.png");
-	unsigned press_ref = qgl_tex_load("./resources/press.png");
-	font_ref = qgl_font_open("./resources/font.png", 9, 16, 0, 255); 
+	unsigned entry_ref = lam_tex_load("./resources/seven.png");
+	unsigned press_ref = lam_tex_load("./resources/press.png");
+	font_ref = lam_font_open("./resources/font.png", 9, 16, 0, 255); 
 	dialog_init();
 
 	lamb = 0;
@@ -201,7 +201,7 @@ int main(void) {
 		= dialog_option(dlg_edit,
 				"Tile",
 				"Select tile number.");
-	dialog_input(dlg_tile, 7, 1, QGL_INPUT_NUMERIC,
+	dialog_input(dlg_tile, 7, 1, LAM_INPUT_NUMERIC,
 				"Tile '%1' selected");
 	dialog_then(dlg_tile, tile_sel);
 
@@ -209,7 +209,7 @@ int main(void) {
 		= dialog_option(dlg_edit,
 				"Layer",
 				"Select layer number.");
-	dialog_input(dlg_layer, 7, 1, QGL_INPUT_NUMERIC,
+	dialog_input(dlg_layer, 7, 1, LAM_INPUT_NUMERIC,
 			"Layer '%1' selected");
 	dialog_then(dlg_layer, layer_sel);
 
@@ -227,10 +227,10 @@ int main(void) {
 	game_start();
 
 	uint32_t be_width, be_height;
-	qgl_size(&be_width, &be_height);
+	lam_size(&be_width, &be_height);
 
 	while (start_cont) {
-		qgl_tex_draw(entry_ref,
+		lam_tex_draw(entry_ref,
 				0, 0,
 				be_width,
 				be_height);
@@ -238,16 +238,16 @@ int main(void) {
 
 		uint8_t alpha = (uint8_t) ((fmod(time_tick, 1.3) / 1.3) * 255);
 
-		qgl_tint(0x00FFFFFF
+		lam_tint(0x00FFFFFF
 				| (((uint64_t) alpha) << 24));
 
-		qgl_tex_draw(press_ref,
+		lam_tex_draw(press_ref,
 				be_width / 2 - 128,
 				be_height - 128,
 				256,
 				118);
 
-		qgl_tint(qgl_default_tint);
+		lam_tint(lam_default_tint);
 
 		game_update();
 	}

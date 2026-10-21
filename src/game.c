@@ -1,4 +1,4 @@
-#include <ttypt/qgl.h>
+#include <ttypt/lam.h>
 #include "../include/view.h"
 #include "../include/gtime.h"
 #include "../include/tile.h"
@@ -19,10 +19,10 @@ double
 game_update(void) {
 	double dt;
 	/* be_flush(); */
-	qgl_flush();
+	lam_flush();
 	dt = dt_get();
 	view_update(dt);
-	qgl_poll();
+	lam_poll();
 	return dt;
 }
 

@@ -1,5 +1,5 @@
-#include <ttypt/qgl.h>
-#include <ttypt/qgl-tm.h>   /* usa o header certo do TM */
+#include <ttypt/lam.h>
+#include <ttypt/lam-tm.h>
 #include "../include/tile.h"
 #include "../include/cam.h"
 #include "../include/view.h"
@@ -17,5 +17,5 @@ tile_render(uint32_t tm_ref, uint32_t idx, int16_t *p)
 	uint32_t dw = (uint32_t)view_mul;
 	uint32_t dh = (uint32_t)view_mul;
 
-	qgl_tile_draw(tm_ref, idx, x, y, dw, dh, 1, 1);
+	lam_tile_draw(tm_ref, idx, x, y, dw, dh, 1, 1);
 }

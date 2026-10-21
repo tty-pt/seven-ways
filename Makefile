@@ -1,6 +1,6 @@
 BE := glfw
 
-LDLIBS := -lm -lislet -lxxhash -lcorm -lqsys -lqgl
+LDLIBS := -lm -lislet -lxxhash -lcorm -lqsys -llamina
 LDLIBS += ${LDLIBS-${BE}}
 
 LDLIBS-Linux += -lEGL

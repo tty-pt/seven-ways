@@ -1,5 +1,5 @@
-#include <ttypt/qgl.h>
-#include <ttypt/qgl-tm.h>
+#include <ttypt/lam.h>
+#include <ttypt/lam-tm.h>
 #include "../include/tile.h"
 #include "../include/cam.h"
 #include "../include/char.h"
@@ -65,7 +65,7 @@ view_render_tile(int16_t *tl, uint32_t *bmtl,
 {
 	int16_t p[] = { x + tl[0], y + tl[1], z };
 	layer_t *layer = &layers[z];
-	uint32_t col = qgl_tex_pick(layer->bm_ref,
+	uint32_t col = lam_tex_pick(layer->bm_ref,
 			x + bmtl[0],
 			y + bmtl[1]);
 
@@ -142,8 +142,8 @@ view_load(char *filename) {
 		CBUG(!space, "file input end: C\n");
 		*space = '\0';
 
-		unsigned img = qgl_tex_load(word);
-		qgl_tm_new(img, w, w);
+		unsigned img = lam_tex_load(word);
+		lam_tm_new(img, w, w);
 	}
 
 #if !CHAR_SYNC
@@ -183,29 +183,29 @@ view_load(char *filename) {
 		snprintf(line, sizeof(line),
 				"./map/map%u.png",
 				i);
-		layer->bm_ref = qgl_tex_load(line);
+		layer->bm_ref = lam_tex_load(line);
 		layer->tm_ref = 0;
 	}
 
-	unsigned col_ref = qgl_tex_load("./map/col0.png");
+	unsigned col_ref = lam_tex_load("./map/col0.png");
 	size_t len = map_width * map_height * sizeof(unsigned);
 
 	view_flags = malloc(len);
 	memset(view_flags, 0, len);
 
-	const qgl_tm_t *tm = qgl_tm_get(0);
+	const lam_tm_t *tm = lam_tm_get(0);
 	unsigned *vf = view_flags;
 
 	for (uint32_t y = 0; y < map_height; y++)
 		for (uint32_t x = 0; x < map_width; x++, vf++)
 			for (uint32_t z = 0; z < layer_n; z++) {
 				layer_t *layer = &view_layers[z];
-				uint32_t color = qgl_tex_pick(
+				uint32_t color = lam_tex_pick(
 						layer->bm_ref, x, y);
 				unsigned idx = map_idx(color);
 				uint32_t tx = idx % tm->nx,
 					 ty = idx / tm->nx;
-				uint32_t col = qgl_tex_pick(col_ref, tx, ty);
+				uint32_t col = lam_tex_pick(col_ref, tx, ty);
 				*vf |= col;
 			}
 }
@@ -216,7 +216,7 @@ view_init(void)
 	uint32_t be_width, be_height;
 	islet_init();
 
-	qgl_size(&be_width, &be_height);
+	lam_size(&be_width, &be_height);
 
 	cam.x = 0;
 	cam.y = 0;
@@ -252,7 +252,7 @@ view_paint(unsigned ref, unsigned tile, uint16_t layer)
 	double x, y;
 
 	char_pos(&x, &y, ref);
-	qgl_tex_paint(view_layers[layer].bm_ref,
+	lam_tex_paint(view_layers[layer].bm_ref,
 			((int16_t) x) - view_min[0],
 			((int16_t) y) - view_min[1],
 			map_color(tile));
@@ -303,19 +303,19 @@ void
 view_sync(void)
 {
 	unsigned tile = 0;
-	const qgl_tm_t *tm = qgl_tm_get(view_layers[1].tm_ref);
+	const lam_tm_t *tm = lam_tm_get(view_layers[1].tm_ref);
 	
 	for (uint32_t y = 0; y < tm->ny; y++) {
 		for (uint32_t x = 0; x < tm->nx; x++, tile++) {
-			qgl_tex_paint(view_layers[1].bm_ref,
+			lam_tex_paint(view_layers[1].bm_ref,
 					x, y,
 					map_color(tile));
 		}
 	}
 
 
-	qgl_tex_save(view_layers[0].bm_ref);
-	qgl_tex_save(view_layers[1].bm_ref);
+	lam_tex_save(view_layers[0].bm_ref);
+	lam_tex_save(view_layers[1].bm_ref);
 }
 
 int

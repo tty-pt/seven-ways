@@ -1,6 +1,6 @@
-#include <ttypt/qgl.h>
-#include <ttypt/qgl-font.h>
-#include <ttypt/qgl-ui.h>
+#include <ttypt/lam.h>
+#include <ttypt/lam-font.h>
+#include <ttypt/lam-ui.h>
 #include "../include/dialog.h"
 #include "../include/gtime.h"
 
@@ -40,8 +40,8 @@ static uint32_t be_width, be_height;
 dialog_settings_t dialog = { .font_scale = 5 };
 static uint32_t g_css;
 
-static qui_div_t *root, *txt, *options, *cursor, *input;
-static qui_div_t *menu_panel;
+static lam_ui_div_t *root, *txt, *options, *cursor, *input;
+static lam_ui_div_t *menu_panel;
 static struct dialog cdialog;
 static char *dialog_arg[8];
 static unsigned dialog_arg_n;
@@ -86,53 +86,53 @@ static char *dialog_snprintf(char *fmt)
 }
 
 #if 0
-static void make_example(qui_div_t *parent, char *className) {
-	qui_div_t *example = qui_new(parent, NULL);
-	qui_class(example, className);
+static void make_example(lam_ui_div_t *parent, char *className) {
+	lam_ui_div_t *example = lam_ui_new(parent, NULL);
+	lam_ui_class(example, className);
 
 	for (int i = 0; i < 3; i++) {
-		qui_div_t *row = qui_new(example, NULL);
-		qui_text(row, "t");
-		qui_class(row, "option-active");
+		lam_ui_div_t *row = lam_ui_new(example, NULL);
+		lam_ui_text(row, "t");
+		lam_ui_class(row, "option-active");
 	}
 }
 #endif
 
-static qui_div_t *build_qui_tree(void)
+static lam_ui_div_t *build_lam_ui_tree(void)
 {
-	root = qui_new(NULL, NULL);
+	root = lam_ui_new(NULL, NULL);
 
-	qui_div_t *overlay = qui_new(root, NULL);
-	qui_class(overlay, "overlay");
+	lam_ui_div_t *overlay = lam_ui_new(root, NULL);
+	lam_ui_class(overlay, "overlay");
 
-	menu_panel = qui_new(overlay, NULL);
-	qui_class(menu_panel, "menu_panel");
+	menu_panel = lam_ui_new(overlay, NULL);
+	lam_ui_class(menu_panel, "menu_panel");
 
-	qui_div_t *panel = qui_new(overlay, NULL);
-	qui_class(panel, "panel");
+	lam_ui_div_t *panel = lam_ui_new(overlay, NULL);
+	lam_ui_class(panel, "panel");
 
 	/* make_example(overlay, "example_panel"); */
 	/* make_example(overlay, "example_panel1"); */
 	/* make_example(overlay, "example_panel2"); */
 	/* make_example(overlay, "example_panel3"); */
 
-	txt = qui_new(panel, NULL);
-	qui_class(txt, "text");
+	txt = lam_ui_new(panel, NULL);
+	lam_ui_class(txt, "text");
 
-	cursor = qui_new(panel, NULL);
-	qui_text(cursor, arrow);
-	qui_class(cursor, "cursor");
+	cursor = lam_ui_new(panel, NULL);
+	lam_ui_text(cursor, arrow);
+	lam_ui_class(cursor, "cursor");
 
-	options = qui_new(menu_panel, NULL);
-	qui_class(options, "options");
+	options = lam_ui_new(menu_panel, NULL);
+	lam_ui_class(options, "options");
 
-	input = qui_new(menu_panel, NULL);
-	qui_class(input, "input");
+	input = lam_ui_new(menu_panel, NULL);
+	lam_ui_class(input, "input");
 	return root;
 }
 
 static void update_options(void) {
-	qui_clear(options);
+	lam_ui_clear(options);
 
 	if (!cdialog.option_n)
 		return;
@@ -142,41 +142,41 @@ static void update_options(void) {
 
 	for (; ids_next(&ref, &it); idx++) {
 		const struct option *opt = corm_get(option_hd, &ref);
-		qui_div_t *row = qui_new(options, NULL);
+		lam_ui_div_t *row = lam_ui_new(options, NULL);
 
-		qui_class(row, (idx == cdialog.option) ?
+		lam_ui_class(row, (idx == cdialog.option) ?
 				"option-active" : "option");
-		qui_apply_styles(row, g_css);
-		qui_text(row, opt->text);
+		lam_ui_apply_styles(row, g_css);
+		lam_ui_text(row, opt->text);
 	}
 }
 
 static void dialog_build_styles(void);
 
-void qui_rebuild(void) {
+void lam_ui_rebuild(void) {
 	update_options();
 	cursor_on = 1;
 
-	qui_layout(root);
+	lam_ui_layout(root);
 
-	cdialog.next = (char *)qui_overflow(txt);
+	cdialog.next = (char *)lam_ui_overflow(txt);
 
 	if (cdialog.next) {
-		QUI_STYLE(options, display, QUI_DISPLAY_NONE);
-		QUI_STYLE(cursor, display, QUI_DISPLAY_NONE);
+		LAM_UI_STYLE(options, display, LAM_UI_DISPLAY_NONE);
+		LAM_UI_STYLE(cursor, display, LAM_UI_DISPLAY_NONE);
 		return;
 	}
 
 	if (cursor_on) {
-		QUI_STYLE(cursor, display, QUI_DISPLAY_NONE);
+		LAM_UI_STYLE(cursor, display, LAM_UI_DISPLAY_NONE);
 		cursor_on = 0;
 	}
 
 	if (cdialog.option_n)
-		QUI_STYLE(options, display, QUI_DISPLAY_BLOCK);
+		LAM_UI_STYLE(options, display, LAM_UI_DISPLAY_BLOCK);
 
 	if (cdialog.input != CM_MISS)
-		QUI_STYLE(input, display, QUI_DISPLAY_BLOCK);
+		LAM_UI_STYLE(input, display, LAM_UI_DISPLAY_BLOCK);
 }
 
 static void dialog_begin(unsigned ref)
@@ -191,60 +191,60 @@ static void dialog_begin(unsigned ref)
 	ids_push(&dialog_seq, ref);
 	cdialog = *dlg;
 	cdialog.text = dialog_snprintf(dlg->text);
-	qui_text(txt, cdialog.text);
-	qui_rebuild();
+	lam_ui_text(txt, cdialog.text);
+	lam_ui_rebuild();
 }
 
-static void css_reset(qui_style_t *s)
+static void css_reset(lam_ui_style_t *s)
 {
-	qui_style_reset(s);
+	lam_ui_style_reset(s);
 	s->font_size = 5;
 }
 
 static void dialog_build_styles(void)
 {
-	g_css = qui_stylesheet_init();
+	g_css = lam_ui_stylesheet_init();
 
-	qui_style_t s;
+	lam_ui_style_t s;
 
 	css_reset(&s);
-	s.position = QUI_POSITION_ABSOLUTE;
+	s.position = LAM_UI_POSITION_ABSOLUTE;
 	s.left = s.right = s.top = s.bottom = 0;
 	s.padding_top = s.padding_bottom
 		= s.padding_left = s.padding_right = 10;
-	s.flex_direction = QUI_COLUMN;
-	s.display = QUI_DISPLAY_FLEX;
-	qui_stylesheet_add(g_css, "overlay", &s);
+	s.flex_direction = LAM_UI_COLUMN;
+	s.display = LAM_UI_DISPLAY_FLEX;
+	lam_ui_stylesheet_add(g_css, "overlay", &s);
 
 	css_reset(&s);
 	s.background_color = 0xAA101010;
-	s.align_items = QUI_ALIGN_STRETCH;
+	s.align_items = LAM_UI_ALIGN_STRETCH;
 	s.border_color = 0xFFFFFFFF;
 	s.border_width = 2;
-	s.flex_direction = QUI_COLUMN;
-	s.display = QUI_DISPLAY_NONE;
+	s.flex_direction = LAM_UI_COLUMN;
+	s.display = LAM_UI_DISPLAY_NONE;
 	s.box_shadow_offset_x = 10;
 	s.box_shadow_offset_y = 10;
 	s.box_shadow_blur = 10;
 	s.box_shadow_color = 0x99000000;
-	qui_stylesheet_add(g_css, "options", &s);
+	lam_ui_stylesheet_add(g_css, "options", &s);
 
 	css_reset(&s);
 	s.background_color = 0xAA101010;
 	s.border_color = 0xFFFFFFFF;
 	s.border_width = 1;
 	s.font_size = 1;
-	s.flex_direction = QUI_ROW;
-	s.align_items = QUI_ALIGN_STRETCH;
-	s.display = QUI_DISPLAY_FLEX;
-	s.justify_content = QUI_JUSTIFY_SPACE_AROUND;
-	qui_stylesheet_add(g_css, "example_panel", &s);
-	s.justify_content = QUI_JUSTIFY_SPACE_BETWEEN;
-	qui_stylesheet_add(g_css, "example_panel1", &s);
-	s.justify_content = QUI_JUSTIFY_FLEX_END;
-	qui_stylesheet_add(g_css, "example_panel2", &s);
+	s.flex_direction = LAM_UI_ROW;
+	s.align_items = LAM_UI_ALIGN_STRETCH;
+	s.display = LAM_UI_DISPLAY_FLEX;
+	s.justify_content = LAM_UI_JUSTIFY_SPACE_AROUND;
+	lam_ui_stylesheet_add(g_css, "example_panel", &s);
+	s.justify_content = LAM_UI_JUSTIFY_SPACE_BETWEEN;
+	lam_ui_stylesheet_add(g_css, "example_panel1", &s);
+	s.justify_content = LAM_UI_JUSTIFY_FLEX_END;
+	lam_ui_stylesheet_add(g_css, "example_panel2", &s);
 	s.flex_grow = 0.92f;
-	qui_stylesheet_add(g_css, "example_panel3", &s);
+	lam_ui_stylesheet_add(g_css, "example_panel3", &s);
 
 	css_reset(&s);
 	s.background_color = 0xAA000000;
@@ -259,14 +259,14 @@ static void dialog_build_styles(void)
 	s.box_shadow_color = 0x99000000;
 	s.box_shadow_offset_x = 5;
 	s.box_shadow_offset_y = 5;
-	qui_stylesheet_add(g_css, "panel", &s);
+	lam_ui_stylesheet_add(g_css, "panel", &s);
 
 	css_reset(&s);
-	s.justify_content = QUI_JUSTIFY_CENTER;
-	s.align_items = QUI_ALIGN_CENTER;
+	s.justify_content = LAM_UI_JUSTIFY_CENTER;
+	s.align_items = LAM_UI_ALIGN_CENTER;
 	s.flex_grow = 0.7f;
-	s.display = QUI_DISPLAY_FLEX;
-	qui_stylesheet_add(g_css, "menu_panel", &s);
+	s.display = LAM_UI_DISPLAY_FLEX;
+	lam_ui_stylesheet_add(g_css, "menu_panel", &s);
 
 	css_reset(&s);
 	s.font_family_ref = font_ref;
@@ -274,36 +274,36 @@ static void dialog_build_styles(void)
 	s.color = 0xFFFFFFFF;
 	s.padding_left = s.padding_right
 		= s.padding_bottom = s.padding_top = 25;
-	s.white_space = QUI_WS_PRE_WRAP;
-	qui_stylesheet_add(g_css, "text", &s);
+	s.white_space = LAM_UI_WS_PRE_WRAP;
+	lam_ui_stylesheet_add(g_css, "text", &s);
 
 	s.color = 0xFFEEEEEE;
 	s.background_color = 0;
 	s.border_color = 0xFFFFFFFF;
-	s.text_align = QUI_TEXT_ALIGN_CENTER;
-	qui_stylesheet_add(g_css, "option", &s);
+	s.text_align = LAM_UI_TEXT_ALIGN_CENTER;
+	lam_ui_stylesheet_add(g_css, "option", &s);
 
 	s.border_color = s.color = 0xFFFFFFFF;
 	s.background_color = 0x5500AAFF;
 	s.border_width = 1;
 
-	qui_stylesheet_add(g_css, "option-active", &s);
+	lam_ui_stylesheet_add(g_css, "option-active", &s);
 
 	css_reset(&s);
 	s.background_color = 0x55000000;
 	s.border_color = 0xFFFFFFFF;
-	s.display = QUI_DISPLAY_NONE;
-	qui_stylesheet_add(g_css, "input", &s);
+	s.display = LAM_UI_DISPLAY_NONE;
+	lam_ui_stylesheet_add(g_css, "input", &s);
 
 	css_reset(&s);
 	s.font_family_ref = font_ref;
 	s.font_size = 2;
 	s.color = 0xFFFFFFFF;
-	s.position = QUI_POSITION_ABSOLUTE;
-	s.display = QUI_DISPLAY_NONE;
+	s.position = LAM_UI_POSITION_ABSOLUTE;
+	s.display = LAM_UI_DISPLAY_NONE;
 	s.right = 10;
 	s.bottom = 5;
-	qui_stylesheet_add(g_css, "cursor", &s);
+	lam_ui_stylesheet_add(g_css, "cursor", &s);
 }
 
 void dialog_init(void)
@@ -317,11 +317,11 @@ void dialog_init(void)
 	input_hd = corm_open(NULL, NULL, CM_HNDL, qm_input, 0xFF, CM_AINDEX);
 
 	dialog_seq = ids_init();
-	qgl_size(&be_width, &be_height);
+	lam_size(&be_width, &be_height);
 
 	dialog_build_styles();
-	root = build_qui_tree();
-	qui_apply_styles(root, g_css);
+	root = build_lam_ui_tree();
+	lam_ui_apply_styles(root, g_css);
 }
 
 unsigned dialog_add(char *text)
@@ -391,8 +391,8 @@ unsigned dialog_option(unsigned ref, char *op_text, char *text)
 static void cursor_blink(void) {
 	int new_blink_state = ((unsigned)round(time_tick * 2)) & 1;
 	if (blink_state != new_blink_state) {
-		QUI_STYLE(cursor, display, new_blink_state
-			? QUI_DISPLAY_BLOCK : QUI_DISPLAY_NONE);
+		LAM_UI_STYLE(cursor, display, new_blink_state
+			? LAM_UI_DISPLAY_BLOCK : LAM_UI_DISPLAY_NONE);
 		blink_state = new_blink_state;
 	}
 }
@@ -405,7 +405,7 @@ void dialog_render(void)
 	if (cursor_on)
 		cursor_blink();
 
-	qui_render(root);
+	lam_ui_render(root);
 }
 
 void dialog_start(unsigned ref)
@@ -429,7 +429,7 @@ int dialog_action(void)
 
 		dialog_arg[dialog_arg_n++] = in->text;
 		if (in->next != CM_MISS) {
-			QUI_STYLE(input, display, QUI_DISPLAY_NONE);
+			LAM_UI_STYLE(input, display, LAM_UI_DISPLAY_NONE);
 			dialog_begin(in->next);
 			return 1;
 		}
@@ -439,8 +439,8 @@ int dialog_action(void)
 		cdialog.text = cdialog.next;
 		if (!cdialog.text && cdialog.then)
 			cdialog.then();
-		qui_text(txt, cdialog.text);
-		qui_rebuild();
+		lam_ui_text(txt, cdialog.text);
+		lam_ui_rebuild();
 		return 1;
 	}
 
@@ -486,15 +486,15 @@ int input_press(unsigned short code)
 	struct input *in = (struct input *)
 		corm_get(input_hd, &cdialog.input);
 
-	if (code == QGL_KEY_ENTER && !(in->flags & QGL_INPUT_MULTILINE)) {
+	if (code == LAM_KEY_ENTER && !(in->flags & LAM_INPUT_MULTILINE)) {
 		cdialog.input = CM_MISS;
 		return 1;
 	}
 
-	in->len += qgl_key_parse(in->text, in->len, code, in->flags);
+	in->len += lam_key_parse(in->text, in->len, code, in->flags);
 
-	qui_text(input, in->text);
-	qui_rebuild();
+	lam_ui_text(input, in->text);
+	lam_ui_rebuild();
 	return 1;
 }
 
