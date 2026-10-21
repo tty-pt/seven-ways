@@ -22,7 +22,6 @@ map := ${map:%=map/%.png} map/info.txt
 share := map.txt ${resources} ${map}
 share-dirs := resources map
 
-CFLAGS := -g -I/home/quirinpa/libqgl/include
-LDFLAGS := -L/home/quirinpa/libqgl/lib -Wl,-rpath,/home/quirinpa/libqgl/lib
+CFLAGS := -g
 
 -include ../mk/include.mk
