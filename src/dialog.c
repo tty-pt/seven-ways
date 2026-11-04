@@ -11,7 +11,7 @@
 
 #include <ttypt/corm.h>
 #include <ttypt/idm.h>
-#include <ttypt/qsys.h>
+#include <ttypt/stele.h>
 
 struct dialog {
 	char *text;

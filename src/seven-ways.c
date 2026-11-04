@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <ttypt/qsys.h>
+#include <ttypt/stele.h>
 
 unsigned start_cont = 1, cont = 1;
 unsigned lamb;

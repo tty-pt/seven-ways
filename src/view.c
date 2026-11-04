@@ -9,7 +9,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <ttypt/qsys.h>
+#include <ttypt/stele.h>
 #include <ttypt/corm.h>
 #include <ttypt/islet.h>
 #include <ttypt/point.h>
