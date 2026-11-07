@@ -1,4 +1,5 @@
 #include <ttypt/lam-tm.h>
+#include <ttypt/lam-cam.h>
 #include "../include/char.h"
 #include "../include/tile.h"
 #include "../include/gtime.h"
@@ -40,6 +41,18 @@ void char_render(unsigned ref)
 	/* (col=xn, row=ch->anim*4 + ch->dir) → idx linear */
 	uint32_t row = ch->anim * 4 + ch->dir;
 	uint32_t idx = row * tm->nx + xn;
+
+	if (cam.mode_3d) {
+		float sprite_w = (float)tm->w / 32.0f;
+		float sprite_h = (float)tm->h / 32.0f;
+		float wx = (float)(ch->x + ch->nx + 0.5);
+		float wy = (float)(ch->y + ch->ny + 0.5);
+		lam_tile_draw_billboard_3d(ch->tm_ref, idx,
+		                           wx, wy, 0.0f,
+		                           sprite_w, sprite_h,
+		                           0.5f, 0.0f);
+		return;
+	}
 
 	double offs = tm->w / 32.0;
 

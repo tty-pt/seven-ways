@@ -2,8 +2,10 @@
 #include <ttypt/lam-tm.h>
 #include <ttypt/lam-ui.h>
 #include <ttypt/lam-font.h>
+#include <ttypt/lam-cam.h>
 
 #include "../include/game.h"
+#include "../include/cam.h"
 #include "../include/dialog.h"
 #include "../include/gtime.h"
 
@@ -20,6 +22,28 @@ unsigned dlg_edit, dlg_quit;
 unsigned font_ref;
 
 extern double hw, hh;
+extern cam_t cam;
+
+int key_toggle_3d(unsigned short code UNUSED, unsigned short type, int value UNUSED)
+{
+	if (type) return 0;
+	cam.mode_3d = !cam.mode_3d;
+	return 1;
+}
+
+int key_tilt_up(unsigned short code UNUSED, unsigned short type, int value UNUSED)
+{
+	if (type) return 0;
+	if (cam.pitch < 85.0) cam.pitch += 5.0;
+	return 1;
+}
+
+int key_tilt_down(unsigned short code UNUSED, unsigned short type, int value UNUSED)
+{
+	if (type) return 0;
+	if (cam.pitch > 20.0) cam.pitch -= 5.0;
+	return 1;
+}
 
 void quit_nosave(void) {
 	cont = 0;
@@ -168,8 +192,15 @@ int main(void) {
 	lam_key_reg(LAM_KEY_UP, key_up);
 
 	lam_key_reg(LAM_KEY_E, key_edit);
+	lam_key_reg(LAM_KEY_V, key_toggle_3d);
+	lam_key_reg(LAM_KEY_PAGE_UP, key_tilt_up);
+	lam_key_reg(LAM_KEY_PAGE_DOWN, key_tilt_down);
 
 	lam_key_default_reg(lam_key);
+
+	cam.pitch = 55.0;
+	cam.yaw = 0.0;
+	cam.mode_3d = 1;
 
 	view_load("./map.txt");
 

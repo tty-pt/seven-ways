@@ -1,5 +1,6 @@
 #include <ttypt/lam.h>
 #include <ttypt/lam-tm.h>
+#include <ttypt/lam-cam.h>
 #include "../include/tile.h"
 #include "../include/cam.h"
 #include "../include/char.h"
@@ -41,6 +42,10 @@ void view_tl(int16_t tl[dim], uint8_t ow) {
 
 	tl[0] = cam.x - view_w / 2 - n_ow;
 	tl[1] = cam.y - view_h / 2 - n_ow;
+	if (cam.mode_3d) {
+		tl[0] -= 4;
+		tl[1] -= 8;
+	}
 	tl[2] = 0;
 }
 
@@ -49,6 +54,10 @@ void view_len(uint16_t l[dim], uint8_t ow) {
 
 	l[0] = view_w + 2 + 2 * n_ow;
 	l[1] = view_h + 2 + 2 * n_ow;
+	if (cam.mode_3d) {
+		l[0] += 8;
+		l[1] += 14;
+	}
 	l[2] = 4;
 }
 
@@ -64,10 +73,14 @@ view_render_tile(int16_t *tl, uint32_t *bmtl,
 		uint32_t x, uint32_t y, uint32_t z, layer_t *layers)
 {
 	int16_t p[] = { x + tl[0], y + tl[1], z };
+	int32_t mx = (int32_t)x + (int32_t)bmtl[0];
+	int32_t my = (int32_t)y + (int32_t)bmtl[1];
+	if (mx < 0 || (uint32_t)mx >= map_width || my < 0 || (uint32_t)my >= map_height)
+		return;
 	layer_t *layer = &layers[z];
 	uint32_t col = lam_tex_pick(layer->bm_ref,
-			x + bmtl[0],
-			y + bmtl[1]);
+			(uint32_t)mx,
+			(uint32_t)my);
 
 	unsigned idx = map_idx(col);
 	if (idx)
@@ -96,6 +109,13 @@ view_render(void) {
 	int16_t tl[dim];
 	uint32_t bmtl[dim];
 
+	if (cam.mode_3d) {
+		float dist = (float)(14.0 / (cam.zoom > 0.05 ? cam.zoom : 1.0));
+		lam_cam_set_3d((float)cam.x, (float)cam.y, dist, (float)cam.pitch, (float)cam.yaw, 45.0f);
+	} else {
+		lam_cam_set_2d();
+	}
+
 	view_tl(tl, 16);
 	view_bmtl(bmtl, tl);
 	view_len(l, 16);
@@ -107,6 +127,10 @@ view_render(void) {
 		char_render(ref);
 
 	view_render_bm(tl, bmtl, l, 0, above_n, layer_n);
+
+	if (cam.mode_3d) {
+		lam_cam_set_2d();
+	}
 }
 
 void

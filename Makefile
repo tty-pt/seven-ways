@@ -22,6 +22,7 @@ map := ${map:%=map/%.png} map/info.txt
 share := map.txt ${resources} ${map}
 share-dirs := resources map
 
-CFLAGS := -g
+CFLAGS := -g -I../liblamina/include
+LDFLAGS := -L../liblamina/lib -Wl,-rpath,/home/quirinpa/liblamina/lib
 
 -include ../mk/include.mk
